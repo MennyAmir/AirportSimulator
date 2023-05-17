@@ -19,8 +19,8 @@ namespace AirportSimulator.models
     public class Airplane
     {
         public int id { get; set; }
-        public string FlightNumber { get; set; }
-        public string Country { get; set; }
+        public string? FlightNumber { get; set; }
+        public string? Country { get; set; }
         public Visit? CurrentVisit { get; set; }
         public FlightType TypeOfFlight { get; set; }
         [NotMapped]
@@ -34,6 +34,7 @@ namespace AirportSimulator.models
         [NotMapped]
         private static readonly Random _getRandom = new Random();
 
+        public Airplane() { }
 
         public Airplane(int id, FlightType TypeOfFlight) {
             int rnd = _getRandom.Next(0, 7);

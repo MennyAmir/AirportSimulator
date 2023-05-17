@@ -12,11 +12,13 @@ namespace AirportSimulator.models
         public string Name { get; set; }
         public Airplane? AirplaneInSta { get; set; }
 
+        public bool Available { get; set; }
+
         public Station(int id, string Name)
         {
             this.id = id;
             this.Name = Name;
-
+            Available = true;
         }
 
     }

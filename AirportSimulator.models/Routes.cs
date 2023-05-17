@@ -8,8 +8,8 @@ namespace AirportSimulator.models
 {
     public class Routes
     {
-        LinkedList<Station> TakeoffRoute = new LinkedList<Station>();
-        LinkedList<Station> LandRoute = new LinkedList<Station>();
+        public LinkedList<Station> TakeoffRoute = new LinkedList<Station>();
+        public LinkedList<Station> LandRoute = new LinkedList<Station>();
 
 
       /*  Station waitingToTakeoff = new Station(0, "waitingToTakeoff");
