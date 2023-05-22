@@ -12,7 +12,7 @@ namespace AirportSimulator.data.DTO
         public int id { get; set; }
         public string FlightNumber { get; set; }
         public string Country { get; set; }
-        public FlightType TypeOfFlight { get; set; }
+        public string TypeOfFlight { get; set; }
 
         public AirplaneDbDto() {
 
