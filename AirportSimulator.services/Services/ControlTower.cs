@@ -125,10 +125,15 @@ namespace AirportSimulator.services
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("!!RunRunway STIL Works!!");
                     Console.ResetColor();
+                    List<Airplane> finishedRoute = new List<Airplane>();
 
                     foreach (var a in airplanes)
                     {
-                        if (a.CurrentStation != null)
+                        if (a.CurrentStation == null)
+                        {
+                            finishedRoute.Add(a);
+                        }
+                        else
                         {
 
 
@@ -146,7 +151,17 @@ namespace AirportSimulator.services
 
                             }
                         }
+
                     }
+
+                    while (finishedRoute.Count > 0)
+                    {
+                        Airplane a =  finishedRoute.First();
+                        airplanes.Remove(a);
+                        finishedRoute.Remove(a);
+                        Console.WriteLine($"Airplan {a.FlightNumber} deleted from the main list");
+                    }
+
                     await Task.Delay(1000);
 
 
