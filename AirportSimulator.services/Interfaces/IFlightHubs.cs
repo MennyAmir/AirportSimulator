@@ -8,6 +8,6 @@ namespace AirportSimulator.services.Interfaces
         public Task SendAllFlights(PlaneDTO[] flights);
         public Task SendStateOfStations(StateOfStations states);
         public Task SendStateOfStation(StationDbDto state);
-
+        public async Task SendVisit(Visit visit);
     }
 }
