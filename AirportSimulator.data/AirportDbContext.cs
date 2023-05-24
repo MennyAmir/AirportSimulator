@@ -16,8 +16,11 @@ namespace AirportSimulator.data
 
 
         public DbSet<AirplaneDbDto> Airplanes { get; set; }
-        public DbSet<StationDbDto> Stations { get; set; }
-        public DbSet<Visit> Visits { get; set; }
+        public DbSet<StationDbDto> Stations { get; set; }//real time
+        public DbSet<Visit> Visits { get; set; }//history
+        public DbSet<AirplaneDbDto> PlannedLandings { get; set; }
+        public DbSet<AirplaneDbDto> PlannedTakeOff { get; set; }
+        public DbSet<StationDbDto> StationsStatus { get; set; }//real time
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

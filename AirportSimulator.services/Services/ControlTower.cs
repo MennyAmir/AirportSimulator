@@ -139,9 +139,6 @@ namespace AirportSimulator.services
                         }
                         else
                         {
-
-
-
                             if (a.CurrentStation.Next.Value.Available == true)
                             {
                                 a.CurrentStation.Next.Value.LockSt();
@@ -296,6 +293,11 @@ namespace AirportSimulator.services
                 a.CurrentStation.Next.Value.Available = false;
                 //לשנות במטוס עצמו שהוא עבר לתחנה הבאה 
                 a.CurrentStation = a.CurrentStation.Next;
+                using (IAirportService service = new AirportService())
+                {
+                    Visit newVisit = new Visit(a.id, a.CurrentStation); 
+                    service.AddVisit(newVisit);
+                }
 
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStation.Value.Name}");
