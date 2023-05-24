@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -13,8 +14,10 @@ namespace AirportSimulator.models
         public int id { get; set; }
         public string Name { get; set; }
 /*        public Airplane? AirplaneInSta { get; set; }
-*/        public ConcurrentQueue<Airplane> WaitingToEnter { get; set; }
+*/      
+ 
         [JsonIgnore]
+        [NotMapped]
         public SemaphoreSlim StationBusy { get; set; }
         public bool Available { get; set; }
 
@@ -27,7 +30,6 @@ namespace AirportSimulator.models
         }
 
 
-        public void AddToWaiting(Airplane airplane) => WaitingToEnter.Enqueue(airplane);
 
         public void LockSt() => StationBusy.Wait();
 

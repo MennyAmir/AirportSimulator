@@ -87,23 +87,27 @@ namespace AirportSimulator.services
 
         private void AddingFlightData(Airplane a) {
             a.Stations = routes.ReturnRoutes(a.TypeOfFlight);
+            a.StationsT = routes.ReturnRoutesT(a.TypeOfFlight);
+            airplanes.Add(a);
+
+
             /*            a.CurrentStation = a.Stations!.First;
             */
-            if (a.TypeOfFlight == FlightType.Incoming)
+           /* if (a.TypeOfFlight == FlightType.Incoming)
             {
                 IncomingAirplanes.Enqueue(a);
             }
             else if (a.TypeOfFlight == FlightType.Departing)
             {
                 DepartingAirplanes.Enqueue(a);
-            }
+            }*/
         }
 
         public IEnumerable<Airplane> GetAirplanes() { return airplanes; }
 
 
         public void RunRunway() {
-            Task.Run(async () =>
+           /* Task.Run(async () =>
             {
                 while (true)
                 {
@@ -114,7 +118,7 @@ namespace AirportSimulator.services
                     Console.ResetColor();
                     await Task.Delay(1000);
                 }
-            });
+            });*/
 
             Task.Run(async () =>
             {
@@ -123,11 +127,11 @@ namespace AirportSimulator.services
                 {
 
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("!!RunRunway STIL Works!!");
+                    Console.WriteLine("!!RunRunway Works!!");
                     Console.ResetColor();
                     List<Airplane> finishedRoute = new List<Airplane>();
 
-                    foreach (var a in airplanes)
+                   /* foreach (var a in airplanes)
                     {
                         if (a.CurrentStation == null)
                         {
@@ -152,11 +156,78 @@ namespace AirportSimulator.services
                             }
                         }
 
+                    }*/
+
+ 
+
+
+
+                    foreach (var a in airplanes)
+                    {
+                        Station? s = a.CurrentStationT;
+                        Station? nextStation = null;
+                        List<Station> asd = new List<Station>();
+
+                        foreach (var ts in a.StationsT)
+                        {
+                            if (s == null && ts.Item1 == null)
+                            {
+                                if (a.TypeOfFlight == FlightType.Incoming)
+                                {
+                                    asd.Add(ts.Item2);
+                                    break;
+                                }
+                                if (a.TypeOfFlight == FlightType.Departing)
+                                {
+                                    asd.Add(ts.Item2);
+
+                                }
+                            }
+                            else if (s == ts.Item1)
+                            {
+                                if (ts.Item2 != null)
+                                    asd.Add(ts.Item2);
+                                else
+                                {
+                                    finishedRoute.Add(a);
+                                    break;
+                                }
+
+
+                            }
+
+
+                        }
+
+                        if (asd != null && asd.Count > 0)
+                        {
+                            if (asd.Count == 1) 
+                            {
+                                nextStation = asd.First();
+
+                            }
+                             if (asd.Count == 2)
+                            {
+                                if (asd[0].Available == false && asd[1].Available == false) { break; }
+                                if (asd[0].Available == true) { nextStation = asd.First(); }
+                                if (asd[1].Available == true) { nextStation = asd.Last(); }
+                            }
+                        }
+
+                        if (nextStation == null) { break; }
+                        nextStation.LockSt();
+                        // מטוס מגיע לכאן ויודע מה התחנה הבאה שלו 
+                        // אם אין לו תחנה הבאה == הוא סיים את המסלול הוא לא יכנס 
+                        // בפונקציה הבאה צריך לבדוק עם הוא נמצא בתחנה ואם כן להוציא אותו מהתכנה ולשחרר אותה 
+                        // ואז את כולם צריך להכניס לתחנה הבאה שלהם ולעדכן הכל 
+                        AirplaneCrossingToNextST(a,nextStation);
+
+
                     }
 
                     while (finishedRoute.Count > 0)
                     {
-                        Airplane a =  finishedRoute.First();
+                        Airplane a = finishedRoute.First();
                         airplanes.Remove(a);
                         finishedRoute.Remove(a);
                         Console.WriteLine($"Airplan {a.FlightNumber} deleted from the main list");
@@ -181,12 +252,30 @@ namespace AirportSimulator.services
             });
         }
 
-        private void AirplaneCrossing(Airplane a) {
+        private void AirplaneCrossingToNextST(Airplane a, Station nextStation) {
+            if (a.CurrentStationT != null)
+            {
+                Station previousStation = a.CurrentStationT;
+                previousStation.Available = true;
+/*                previousStation.AirplaneInSta = a;*/              
+                previousStation.UnlockSt();
+            }
+
+            /*nextStation.AirplaneInSta = a;*/
+            nextStation.Available = false;
+            a.CurrentStationT = nextStation;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStationT.Name}");
+            Console.ResetColor();
+
+        }
+/*        private void AirplaneCrossing(Airplane a) {
 
 
             // לשחרר בתחנה הנוכחית שהיא פנויה ולהוציא ממנה את המטוס
-/*            a.CurrentStation.Value.AirplaneInSta = null;
-*/            a.CurrentStation.Value.Available = true;
+            *//*            a.CurrentStation.Value.AirplaneInSta = null;
+            *//*
+            a.CurrentStation.Value.Available = true;
             a.CurrentStation.Value.UnlockSt();
 
 
@@ -202,8 +291,9 @@ namespace AirportSimulator.services
             else
             {
                 // להכניס את המטוס ברשימה הבאה ולהחריז שהוא טפוס 
-/*                a.CurrentStation.Next.Value.AirplaneInSta = a;
-*/                a.CurrentStation.Next.Value.Available = false;
+                *//*                a.CurrentStation.Next.Value.AirplaneInSta = a;
+                *//*
+                a.CurrentStation.Next.Value.Available = false;
                 //לשנות במטוס עצמו שהוא עבר לתחנה הבאה 
                 a.CurrentStation = a.CurrentStation.Next;
 
@@ -212,7 +302,7 @@ namespace AirportSimulator.services
                 Console.ResetColor();
             }
         }
-
+*/
         /* private void StationCrossing(Station s) {
              s.StationBusy.Wait();
 
@@ -223,7 +313,7 @@ namespace AirportSimulator.services
              // להכניס אותו לרשימה (ות) של התכנה הבאה 
          }*/
 
-        public void WaitingForLanding(ConcurrentQueue<Airplane> airplansForLandidin) {
+/*        public void WaitingForLanding(ConcurrentQueue<Airplane> airplansForLandidin) {
 
             if (airplansForLandidin.Count == 0) { return; }
 
@@ -236,8 +326,9 @@ namespace AirportSimulator.services
                     a.CurrentStation = routes.LandRoute.First;
                     a.CurrentStation.Value.LockSt();
 
-/*                    a.CurrentStation.Value.AirplaneInSta = a;
-*/                    a.CurrentStation.Value.Available = false;
+                    *//*                    a.CurrentStation.Value.AirplaneInSta = a;
+                    *//*
+                    a.CurrentStation.Value.Available = false;
                     airplanes.Add(a);
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStation.Value.Name}");
@@ -259,8 +350,9 @@ namespace AirportSimulator.services
                     a.CurrentStation = routes.TakeoffRoute.First;
                     a.CurrentStation.Value.LockSt();
 
-/*                    a.CurrentStation.Value.AirplaneInSta = a;
-*/                    a.CurrentStation.Value.Available = false;
+                    *//*                    a.CurrentStation.Value.AirplaneInSta = a;
+                    *//*
+                    a.CurrentStation.Value.Available = false;
                     airplanes.Add(a);
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStation.Value.Name}");
@@ -268,7 +360,7 @@ namespace AirportSimulator.services
                 }
             }
 
-            /*  if (routes.TakeoffRoute.First!.Value.AirplaneInSta == null || routes.TakeoffRoute.First.Next!.Value.AirplaneInSta == null)
+            *//*  if (routes.TakeoffRoute.First!.Value.AirplaneInSta == null || routes.TakeoffRoute.First.Next!.Value.AirplaneInSta == null)
               {
                   if (airplansForDepartind.TryDequeue(out Airplane a))
 
@@ -300,8 +392,8 @@ namespace AirportSimulator.services
 
 
                   }
-              }*/
-        }
+              }*//*
+        }*/
 
 
 

@@ -26,9 +26,14 @@ namespace AirportSimulator.models
         [NotMapped]
         public AirplaneStatse Statse { get; set; }
         [NotMapped]
+        public List<Tuple<Station?, Station?>> StationsT { get; set; }
+        [NotMapped]
         public LinkedList<Station>? Stations { get; set; }
         [NotMapped]
         public LinkedListNode<Station>? CurrentStation { get; set; }
+
+        public Station? CurrentStationT { get; set; }
+
         [NotMapped]
         public static string[,] States => new string[,] { { "London" ,"EGKK" }, { "Geneva" ,"LSGG" }, {"Lisbon"," LSGG"},{ "Barcelona", "LEBL" }, { "Napoli", " LIRN" },{ "Paris", " LFPB" },{ "Athena", " LGAV" },{ "Strasbourg", " LFST" } };
         [NotMapped]
