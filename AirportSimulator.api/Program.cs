@@ -2,6 +2,7 @@ using AirportSimulator.data;
 using AirportSimulator.services;
 using AirportSimulator.services.Interfaces;
 using AirportSimulator.services.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 namespace AirportSimulator.api
@@ -17,6 +18,11 @@ namespace AirportSimulator.api
 
             builder.Services.AddSingleton<IControlTower, ControlTower>();
             builder.Services.AddScoped<IAirportService, AirportService>();
+            builder.Services.AddScoped<IFlightHubs, FlightHubs>();
+
+            builder.Services.AddSignalR();
+
+
 
 
             builder.Services.AddDbContext<AirportDbContext>(options =>
@@ -55,6 +61,8 @@ namespace AirportSimulator.api
 
 
             app.MapControllers();
+
+            app.MapHub<FlightHubs>("./AirportSimulator.services/Services/FlightHubs");
 
             app.Run();
         }

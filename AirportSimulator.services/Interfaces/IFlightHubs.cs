@@ -1,13 +1,20 @@
 
+using AirportSimulator.data.DTO;
+using AirportSimulator.models;
+
 namespace AirportSimulator.services.Interfaces
 {
     public interface IFlightHubs
     {
 
-        public Task SendFlight(PlaneDTO flight);
-        public Task SendAllFlights(PlaneDTO[] flights);
-        public Task SendStateOfStations(StateOfStations states);
+        public Task SendFlight(AirplaneDbDto flight);
+        public Task SendAllFlights(AirplaneDbDto[] flights);
+        public Task SendLandingFlights(AirplaneDbDto[] flights);
+
+        public Task SendTakeOffFlights(AirplaneDbDto[] flights);
+
+        public Task SendStateOfStations(StationDbDto[] states);
         public Task SendStateOfStation(StationDbDto state);
-        public async Task SendVisit(Visit visit);
+        public Task SendVisit(Visit visit);
     }
 }

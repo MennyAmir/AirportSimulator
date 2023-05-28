@@ -38,10 +38,22 @@ namespace AirportSimulator.services.Services
             _flightHubs.SendVisit(visit);
             Console.WriteLine("visit send");
         }
+/*        public async void UpdeateVisit(Airplane a, DateTime ExitTime) {
+            Visit visit =  _airportDbContext.FindAsync(a.Country)
+                (a.CurrentVisit);
+            _airportDbContext.Visits.Update();
+            _airportDbContext.SaveChanges();
+
+            _flightHubs.SendVisit(visit);
+            Console.WriteLine("visit send");
+        }*/
 
         public void ReportStations(StationDbDto[] stations)
         {
-            _airportDbContext.StationsStatus.Add(stations);
+            foreach (var stat in stations)
+            {
+                _airportDbContext.StationsStatus.Add(stat);
+            }
             _airportDbContext.SaveChanges();
 
             _flightHubs.SendStateOfStations(stations);
@@ -49,21 +61,25 @@ namespace AirportSimulator.services.Services
         }
 
 
-        public void AddLandingAirplane(AirplaneDbDto flights)
+        public void AddLandingAirplane(AirplaneDbDto flight)
         {
-            _airportDbContext.PlannedLandings.Add(flights);
+            _airportDbContext.PlannedLandings.Add(flight);
             _airportDbContext.SaveChanges();
-            _flightHubs.SendTakeOffFlights(flights);
+            AirplaneDbDto[] dbDto = _airportDbContext.PlannedLandings.ToArray();
+            _flightHubs.SendTakeOffFlights(dbDto);
             Console.WriteLine("PlannedLandings reoprt");
         }
 
-        public void AddPlannedTakeOffAirplane(AirplaneDbDto[] flights)
+        public void AddPlannedTakeOffAirplane(AirplaneDbDto flight)
         {
-            _airportDbContext.PlannedTakeOff.Add(flights);
+            _airportDbContext.PlannedTakeOff.Add(flight);
             _airportDbContext.SaveChanges();
-            _flightHubs.SendLandingFlights(flights);
+            AirplaneDbDto[] dbDto = _airportDbContext.PlannedTakeOff.ToArray();
+            _flightHubs.SendLandingFlights(dbDto);
             Console.WriteLine("PlannedTakeOff reoprt");
         }
+
+
 
 
 
