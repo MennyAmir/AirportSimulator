@@ -14,24 +14,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using static System.Collections.Specialized.BitVector32;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AirportSimulator.services
 {
     public class ControlTower : IControlTower {
-        private static System.Timers.Timer ctTimer;
 
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
-        /*        private readonly IAirportService _airportService;
-*/
-
         public List<Airplane> airplanes { get; set; }
         public Routes routes { get; set; }
-
         public List<Station> stations { get; set; }
-        public ConcurrentQueue<Airplane> DepartingAirplanes { get; set; }
 
-        public ConcurrentQueue<Airplane> IncomingAirplanes { get; set; }
         public List<Airplane> FinishedRoute { get; set; }
 
         public ControlTower(/*IAirportService airportService*/ IServiceScopeFactory serviceScopeFactory) {
@@ -41,12 +35,10 @@ namespace AirportSimulator.services
             stations = new List<Station>();
             routes = new Routes();
             stations = routes.GetStations();
-            DepartingAirplanes = new ConcurrentQueue<Airplane>();
-            IncomingAirplanes = new ConcurrentQueue<Airplane>();
+
             FinishedRoute = new List<Airplane>();
             this._serviceScopeFactory = serviceScopeFactory;
             Task.Run(() => RunRunway());
-            /*SetTimer();*/
         }
 
 
@@ -57,15 +49,6 @@ namespace AirportSimulator.services
             Console.WriteLine(a.id + "," + a.FlightNumber);
             AddingPlaneToDB(a);
 
-
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            for (int i = 0; i < airplanes.Count; i++)
-            {
-
-                Console.WriteLine("IN THE LIST:" + airplanes[i].FlightNumber);
-            }
-            Console.ResetColor();
 
             return a;
         }
@@ -84,39 +67,15 @@ namespace AirportSimulator.services
         }
 
         private void AddingFlightData(Airplane a) {
-            a.Stations = routes.ReturnRoutes(a.TypeOfFlight);
             a.StationsT = routes.ReturnRoutesT(a.TypeOfFlight);
             airplanes.Add(a);
-
-
-            /*            a.CurrentStation = a.Stations!.First;
-            */
-            /* if (a.TypeOfFlight == FlightType.Incoming)
-             {
-                 IncomingAirplanes.Enqueue(a);
-             }
-             else if (a.TypeOfFlight == FlightType.Departing)
-             {
-                 DepartingAirplanes.Enqueue(a);
-             }*/
         }
 
         public IEnumerable<Airplane> GetAirplanes() { return airplanes; }
 
 
         public void RunRunway() {
-            /* Task.Run(async () =>
-             {
-                 while (true)
-                 {
-                     WaitingForLanding(IncomingAirplanes);
-                     WaitingForDeparting(DepartingAirplanes);
-                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                     Console.WriteLine("!!RunRunway Waiting Works!!");
-                     Console.ResetColor();
-                     await Task.Delay(1000);
-                 }
-             });*/
+
 
             Task.Run(async () =>
             {
@@ -124,100 +83,33 @@ namespace AirportSimulator.services
                 while (true)
                 {
 
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("!!RunRunway Works!!");
-                    Console.ResetColor();
                     List<Airplane> finishedRoute = new List<Airplane>();
 
-                    /* foreach (var a in airplanes)
-                     {
-                         if (a.CurrentStation == null)
-                         {
-                             finishedRoute.Add(a);
-                         }
-                         else
-                         {
-                             if (a.CurrentStation.Next.Value.Available == true)
-                             {
-                                 a.CurrentStation.Next.Value.LockSt();
 
-                                 AirplaneCrossing(a);
-
-                             }
-                             if (a.CurrentStation.Next == null)
-                             {
-                                 AirplaneCrossing(a);
-
-                             }
-                         }
-
-                     }*/
-
-
-
-
-
-                    foreach (var a in airplanes)
+                    foreach (var a in airplanes) //כל מטוס 
                     {
                         Station? s = a.CurrentStationT;
                         Station? nextStation = null;
                         List<Station> asd = new List<Station>();
 
-                        foreach (var ts in a.StationsT)
-                        {
-                            if (s == null && ts.Item1 == null)
-                            {
-                                if (a.TypeOfFlight == FlightType.Incoming)
-                                {
-                                    asd.Add(ts.Item2);
-                                    break;
-                                }
-                                if (a.TypeOfFlight == FlightType.Departing)
-                                {
-                                    asd.Add(ts.Item2);
+                        GetNextPossibleStations(finishedRoute, a, s, asd);
 
-                                }
-                            }
-                            else if (s == ts.Item1)
-                            {
-                                if (ts.Item2 != null)
-                                    asd.Add(ts.Item2);
-                                else
-                                {
-                                    finishedRoute.Add(a);
-                                    break;
-                                }
+                        nextStation = GetNextOpenStation(asd);
 
+                        /*                        if (nextStation == null)
+                                                {
+                                                    s!.UnlockSt();
+                                                    s.Available = true;
+                                                    break; 
+                                                }*/
 
-                            }
+                        if (nextStation != null) { nextStation.LockSt(); }
 
-
-                        }
-
-                        if (asd != null && asd.Count > 0)
-                        {
-                            if (asd.Count == 1)
-                            {
-                                nextStation = asd.First();
-
-                            }
-                            if (asd.Count == 2)
-                            {
-                                if (asd[0].Available == false && asd[1].Available == false) { break; }
-                                if (asd[0].Available == true) { nextStation = asd.First(); }
-                                if (asd[1].Available == true) { nextStation = asd.Last(); }
-                            }
-                        }
-
-                        if (nextStation == null) { break; }
-                        nextStation.LockSt();
                         // מטוס מגיע לכאן ויודע מה התחנה הבאה שלו 
                         // אם אין לו תחנה הבאה == הוא סיים את המסלול הוא לא יכנס 
                         // בפונקציה הבאה צריך לבדוק עם הוא נמצא בתחנה ואם כן להוציא אותו מהתכנה ולשחרר אותה 
                         // ואז את כולם צריך להכניס לתחנה הבאה שלהם ולעדכן הכל 
                         AirplaneCrossingToNextST(a, nextStation);
-
-
                     }
 
                     while (finishedRoute.Count > 0)
@@ -229,33 +121,92 @@ namespace AirportSimulator.services
                     }
 
                     await Task.Delay(1000);
-
-
-                    /* foreach  (var s in stations)
-                     {
-                         if (s.Available = true && s.WaitingToEnter.Count != 0)
-                         {
-                             _ = Task.Run(() =>
-                             {
-                                 StationCrossing(s);
-                             }
-                             );
-                         }
-                     }*/
                 }
 
             });
         }
 
-        private void AirplaneCrossingToNextST(Airplane a, Station nextStation) {
+
+        private static void GetNextPossibleStations(List<Airplane> finishedRoute, Airplane a, Station? s, List<Station> asd) {
+            foreach (var ts in a.StationsT)// עובד על כל תחנה 
+            {
+
+
+                if (s == null && ts.Item1 == null) // אם התחנההנוחכית ריקה וגרופ הנוחכי התחנה הראשונה ריקה 
+                                                   // בקיצור המטוס רק הגיע לשדה 
+                {
+                    if (a.TypeOfFlight == FlightType.Incoming)
+                    {
+                        asd.Add(ts.Item2);
+                        break;
+                    }
+                    if (a.TypeOfFlight == FlightType.Departing)
+                    {
+                        asd.Add(ts.Item2);
+
+                    }
+                }
+                else if (s == ts.Item1) // אחרת עם התחנה הנוכחית שווה לאיזשהו תחנה ראשונית ברשימה של הראשימות הראשוניות
+                {
+                    if (ts.Item2 != null) // אם יש תחנה להמשיך עליה = המטוס לא בתחנה האחרונה שלו 
+                        asd.Add(ts.Item2);
+                    else // עם המטוס הגיע לאחת מהתכנות האחרונות שלו 
+                    {
+                        finishedRoute.Add(a);
+                        break;
+                    }
+
+
+                }
+
+
+            }
+        }
+        private Station GetNextOpenStation(List<Station> asd) {
+            Station? s = null;
+            if (asd != null && asd.Count > 0)
+            {
+
+                if (asd.Count == 1)
+                {
+                    s = asd.First();
+
+                }
+                if (asd.Count == 2)
+                {
+                    if (asd[0].Available == false && asd[1].Available == false) { return null; }
+                    if (asd[0].Available == true) { s = asd.First(); }
+                    if (asd[1].Available == true) { s = asd.Last(); }
+                }
+                return s;
+            }
+            return null;
+        }
+
+        private void AirplaneCrossingToNextST(Airplane a, Station? nextStation) {
             if (a.CurrentStationT != null)
             {
-                Station previousStation = a.CurrentStationT;
-                previousStation.Available = true;
-                /*                previousStation.AirplaneInSta = a;*/
-                previousStation.UnlockSt();
+                ExitPreviousStation(a);
             }
 
+
+            if (nextStation != null)
+            {
+                EntreNextStation(a, nextStation);
+            }
+
+        }
+
+        private static void ExitPreviousStation(Airplane a) {
+            Station previousStation = a.CurrentStationT!;
+            previousStation.Available = true;
+            /*previousStation.AirplaneInSta = a;*/
+            previousStation.UnlockSt();
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"The plane {a.FlightNumber} left the station {a.CurrentStationT.Name}");
+            Console.ResetColor();
+        }
+        private void EntreNextStation(Airplane a, Station? nextStation) {
             /*nextStation.AirplaneInSta = a;*/
             nextStation.Available = false;
             a.CurrentStationT = nextStation;
@@ -263,7 +214,6 @@ namespace AirportSimulator.services
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStationT.Name}");
             Console.ResetColor();
-
         }
 
 
