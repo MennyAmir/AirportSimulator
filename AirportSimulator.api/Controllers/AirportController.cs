@@ -28,13 +28,23 @@ namespace AirportSimulator.api.Controllers
 
 
         [HttpGet("Incoming/{id}")]
-        public Airplane AddIncomingAirplane(int id) {
-            return _controlTower.AddFlight(new Airplane(id, FlightType.Incoming));
+        public IActionResult AddIncomingAirplane(int id) {
+            if (_controlTower.airplanes.Count > 10)
+            {
+                return BadRequest();
+            }
+            _controlTower.AddFlight(new Airplane(id, FlightType.Incoming));
+            return Ok();
         }
 
         [HttpGet("Departing/{id}")]
-        public Airplane AddDepartingAirplane(int id) {
-            return _controlTower.AddFlight(new Airplane(id, FlightType.Departing));
+        public IActionResult AddDepartingAirplane(int id) {
+            if (_controlTower.airplanes.Count > 10)
+            {
+                return BadRequest();
+            }
+            _controlTower.AddFlight(new Airplane(id, FlightType.Departing));
+            return Ok();
         }
     }
 }

@@ -7,16 +7,10 @@ using System.Threading.Tasks;
 namespace AirportSimulator.models
 {
     public class Routes {
-        public LinkedList<Station> TakeoffRoute = new LinkedList<Station>();
-        public LinkedList<Station> LandRoute = new LinkedList<Station>();
 
         public List<Tuple<Station?, Station?>> TakeoffRouteT = new List<Tuple<Station?, Station?>>();
         public List<Tuple<Station?, Station?>> LandRouteT = new List<Tuple<Station?, Station?>>();
 
-
-
-        /*  Station waitingToTakeoff = new Station(0, "waitingToTakeoff");
-          Station waitingToLand = new Station(10, "waitingToLand");*/
         Station s1 = new Station(1, "before landing");
         Station s2 = new Station(2, "Preparing for landing");
         Station s3 = new Station(3, "landing");
@@ -27,37 +21,9 @@ namespace AirportSimulator.models
         Station s8 = new Station(8, "before the appearance");
         Station s9 = new Station(9, "teekoff");
 
-
-        /*        LinkedListNode<Station> waitingToTakeof = new LinkedListNode<Station>(new Station(0, "waitingToTakeoff"));
-        */
-
-
-
-
         public Routes() {
 
 
-
-
-
-            /*            LandRoute.AddFirst(waitingToLand);
-            */
-            LandRoute.AddFirst(s1);
-            LandRoute.AddLast(s2);
-            LandRoute.AddLast(s3);
-            LandRoute.AddLast(s4);
-            LandRoute.AddLast(s5);
-            LandRoute.AddLast(s6);
-            LandRoute.AddLast(s7);
-
-
-            /*            TakeoffRoute.AddFirst(waitingToTakeoff);
-            */
-            TakeoffRoute.AddFirst(s6);
-            TakeoffRoute.AddLast(s7);
-            TakeoffRoute.AddLast(s8);
-            TakeoffRoute.AddLast(s4);
-            TakeoffRoute.AddLast(s9);
 
             LandRouteT.Add(new Tuple<Station?, Station?>(null, s1));
             LandRouteT.Add(new Tuple<Station?, Station?>(s1, s2));
@@ -79,30 +45,8 @@ namespace AirportSimulator.models
             TakeoffRouteT.Add(new Tuple<Station?, Station?>(s8, s4));
             TakeoffRouteT.Add(new Tuple<Station?, Station?>(s4, s9));
             TakeoffRouteT.Add(new Tuple<Station?, Station?>(s9, null));
-
-
-
-
-
-
-
-
-
         }
 
-
-        public LinkedList<Station> ReturnRoutes(FlightType type) {
-
-            if (type == FlightType.Incoming)
-            {
-                return LandRoute;
-            }
-            else
-            {
-                return TakeoffRoute;
-            }
-
-        }
 
         public List<Tuple<Station?, Station>> ReturnRoutesT(FlightType type) {
 
@@ -117,27 +61,6 @@ namespace AirportSimulator.models
 
         }
 
-        public List<Station> GetStations() {
-            List<Station> stations = new List<Station>();
-            stations.Add(s1);
-            stations.Add(s2);
-            stations.Add(s3);
-            stations.Add(s4);
-            stations.Add(s5);
-            stations.Add(s6);
-            stations.Add(s7);
-            stations.Add(s8);
-            stations.Add(s9);
-
-            return stations;
-        }
-
-
-
-
-        public void NextStation() {
-
-        }
     }
 
 

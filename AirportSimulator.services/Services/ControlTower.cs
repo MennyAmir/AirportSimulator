@@ -24,7 +24,6 @@ namespace AirportSimulator.services
 
         public List<Airplane> airplanes { get; set; }
         public Routes routes { get; set; }
-        public List<Station> stations { get; set; }
 
         public List<Airplane> FinishedRoute { get; set; }
 
@@ -32,9 +31,7 @@ namespace AirportSimulator.services
             /*_airportService = airportService;*/
 
             airplanes = new List<Airplane>();
-            stations = new List<Station>();
             routes = new Routes();
-            stations = routes.GetStations();
 
             FinishedRoute = new List<Airplane>();
             this._serviceScopeFactory = serviceScopeFactory;
@@ -175,8 +172,8 @@ namespace AirportSimulator.services
                 if (asd.Count == 2)
                 {
                     if (asd[0].Available == false && asd[1].Available == false) { return null; }
-                    if (asd[0].Available == true) { s = asd.First(); }
-                    if (asd[1].Available == true) { s = asd.Last(); }
+                    else if (asd[0].Available == true) { s = asd.First(); }
+                    else if (asd[1].Available == true) { s = asd.Last(); }
                 }
                 return s;
             }

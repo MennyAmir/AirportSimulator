@@ -9,6 +9,7 @@ namespace AirportSimulator.services.Interfaces
 {
     public interface IControlTower
     {
+        public List<Airplane> airplanes { get; set; }
         public Airplane AddFlight(Airplane a);
 
         public IEnumerable<Airplane> GetAirplanes();
