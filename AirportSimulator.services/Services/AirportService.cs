@@ -38,15 +38,15 @@ namespace AirportSimulator.services.Services
             _flightHubs.SendVisit(visit);
             Console.WriteLine("visit send");
         }
-/*        public async void UpdeateVisit(Airplane a, DateTime ExitTime) {
-            Visit visit =  _airportDbContext.FindAsync(a.Country)
-                (a.CurrentVisit);
-            _airportDbContext.Visits.Update();
+        public async void UpdeateVisit(Airplane a, DateTime ET) {
+            a.CurrentVisit.ExitTime = ET;
+            
+            _airportDbContext.Visits.Update(a.CurrentVisit);
             _airportDbContext.SaveChanges();
 
-            _flightHubs.SendVisit(visit);
+            await _flightHubs.SendVisit(a.CurrentVisit); // גם פה צריך לעשות שרק יעדכן 
             Console.WriteLine("visit send");
-        }*/
+        }
 
         public void ReportStations(StationDbDto[] stations)
         {

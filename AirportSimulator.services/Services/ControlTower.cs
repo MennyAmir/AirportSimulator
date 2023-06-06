@@ -83,7 +83,7 @@ namespace AirportSimulator.services
                     List<Airplane> finishedRoute = new List<Airplane>();
 
 
-                    foreach (var a in airplanes) //כל מטוס 
+                    foreach (var a in airplanes)  
                     {
                         Station? s = a.CurrentStationT;
                         Station? nextStation = null;
@@ -102,10 +102,13 @@ namespace AirportSimulator.services
 
                         if (nextStation != null) { nextStation.LockSt(); }
 
-                        // מטוס מגיע לכאן ויודע מה התחנה הבאה שלו 
-                        // אם אין לו תחנה הבאה == הוא סיים את המסלול הוא לא יכנס 
-                        // בפונקציה הבאה צריך לבדוק עם הוא נמצא בתחנה ואם כן להוציא אותו מהתכנה ולשחרר אותה 
-                        // ואז את כולם צריך להכניס לתחנה הבאה שלהם ולעדכן הכל 
+
+                        /// הסבר 
+                        /// מטוס מגיע לכאן ויודע מה התחנה הבאה שלו 
+                        /// אם אין לו תחנה הבאה == הוא סיים את המסלול הוא לא יכנס 
+                        /// בפונקציה הבאה צריך לבדוק עם הוא נמצא בתחנה ואם כן להוציא אותו מהתכנה ולשחרר אותה 
+                        /// ואז את כולם צריך להכניס לתחנה הבאה שלהם ולעדכן הכל 
+                        
                         AirplaneCrossingToNextST(a, nextStation);
                     }
 
@@ -194,10 +197,11 @@ namespace AirportSimulator.services
 
         }
 
-        private static void ExitPreviousStation(Airplane a) {
+        private void ExitPreviousStation(Airplane a) {
             Station previousStation = a.CurrentStationT!;
             previousStation.Available = true;
             /*previousStation.AirplaneInSta = a;*/
+            UpdeateVisit(a, previousStation);
             previousStation.UnlockSt();
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"The plane {a.FlightNumber} left the station {a.CurrentStationT.Name}");
@@ -207,6 +211,7 @@ namespace AirportSimulator.services
             /*nextStation.AirplaneInSta = a;*/
             nextStation.Available = false;
             a.CurrentStationT = nextStation;
+
             CreateVisit(a, nextStation);
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStationT.Name}");
@@ -220,6 +225,7 @@ namespace AirportSimulator.services
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
             var _airportService = scope.ServiceProvider.GetRequiredService<IAirportService>();
             Visit newVisit = new Visit(a.id, enteredStation.id);
+            a.CurrentVisit = newVisit;
             _airportService.AddVisit(newVisit);
         }
 
@@ -227,6 +233,7 @@ namespace AirportSimulator.services
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
             var _airportService = scope.ServiceProvider.GetRequiredService<IAirportService>();
             DateTime ExitTime = DateTime.Now;
+            _airportService.UpdeateVisit(a, ExitTime);
             /*_airportService.UpdeateVisit(a, ExitTime);*/
 
         }

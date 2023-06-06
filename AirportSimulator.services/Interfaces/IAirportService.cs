@@ -12,10 +12,11 @@ namespace AirportSimulator.services.Interfaces
     {
         void AddAirplane(AirplaneDbDto a);
 
-        public void AddVisit(Visit visit);
         public void ReportStations(StationDbDto[] stations);
         public void AddLandingAirplane(AirplaneDbDto flights);
         public void AddPlannedTakeOffAirplane(AirplaneDbDto flights);
+        public void AddVisit(Visit visit);
+        public void UpdeateVisit(Airplane a, DateTime ET);
 
     }
 }
