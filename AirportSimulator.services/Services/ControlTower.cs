@@ -85,6 +85,8 @@ namespace AirportSimulator.services
 
                     foreach (var a in airplanes)  
                     {
+                        if (a.Passing == true) break;
+
                         Station? s = a.CurrentStationT;
                         Station? nextStation = null;
                         List<Station> asd = new List<Station>();
@@ -101,13 +103,6 @@ namespace AirportSimulator.services
                                                 }*/
 
                         if (nextStation != null) { nextStation.LockSt(); }
-
-
-                        /// הסבר 
-                        /// מטוס מגיע לכאן ויודע מה התחנה הבאה שלו 
-                        /// אם אין לו תחנה הבאה == הוא סיים את המסלול הוא לא יכנס 
-                        /// בפונקציה הבאה צריך לבדוק עם הוא נמצא בתחנה ואם כן להוציא אותו מהתכנה ולשחרר אותה 
-                        /// ואז את כולם צריך להכניס לתחנה הבאה שלהם ולעדכן הכל 
                         
                         AirplaneCrossingToNextST(a, nextStation);
                     }
@@ -207,12 +202,12 @@ namespace AirportSimulator.services
             Console.WriteLine($"The plane {a.FlightNumber} left the station {a.CurrentStationT.Name}");
             Console.ResetColor();
         }
-        private void EntreNextStation(Airplane a, Station? nextStation) {
+        private async void EntreNextStation(Airplane a, Station? nextStation) {
             /*nextStation.AirplaneInSta = a;*/
             nextStation.Available = false;
             a.CurrentStationT = nextStation;
-
             CreateVisit(a, nextStation);
+            await a.CrossingStation();
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"The plane {a.FlightNumber} entered the station {a.CurrentStationT.Name}");
             Console.ResetColor();

@@ -60,7 +60,6 @@ namespace AirportSimulator.services.Services
             Console.WriteLine("stations send");
         }
 
-
         public void AddLandingAirplane(AirplaneDbDto flight)
         {
             _airportDbContext.PlannedLandings.Add(flight);

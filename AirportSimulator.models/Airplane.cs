@@ -21,6 +21,8 @@ namespace AirportSimulator.models
         public int id { get; set; }
         public string? FlightNumber { get; set; }
         public string? Country { get; set; }
+
+        public Boolean Passing { get; set; }
         public Visit? CurrentVisit { get; set; }
         public FlightType TypeOfFlight { get; set; }
         [NotMapped]
@@ -47,6 +49,18 @@ namespace AirportSimulator.models
             FlightNumber = States[rnd, 1] + id.ToString();
             Country = States[rnd, 0];
             this.TypeOfFlight = TypeOfFlight;
+            Passing = false;
+        }
+
+
+
+        public async Task CrossingStation() {
+            Passing = true;
+            Console.WriteLine($"The a {this.FlightNumber} Passing in {DateTime.Now} ");
+            await Task.Delay(4000); 
+            Passing = false;
+            Console.WriteLine($"The a {this.FlightNumber} continued in {DateTime.Now} ");
+
         }
 
         /*        public void  RoutesControl(Airplane a) {
