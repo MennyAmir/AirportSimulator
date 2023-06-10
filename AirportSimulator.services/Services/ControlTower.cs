@@ -31,8 +31,8 @@ namespace AirportSimulator.services
             /*_airportService = airportService;*/
 
             airplanes = new List<Airplane>();
-            routes = new Routes();
-
+/*            routes = new Routes();
+*/
             FinishedRoute = new List<Airplane>();
             this._serviceScopeFactory = serviceScopeFactory;
             Task.Run(() => RunRunway());
@@ -44,8 +44,8 @@ namespace AirportSimulator.services
             AddingFlightData(a);
 
             Console.WriteLine(a.id + "," + a.FlightNumber);
+            airplanes.Add(a);
             AddingPlaneToDB(a);
-
 
             return a;
         }
@@ -64,8 +64,15 @@ namespace AirportSimulator.services
         }
 
         private void AddingFlightData(Airplane a) {
-            a.StationsT = routes.ReturnRoutesT(a.TypeOfFlight);
-            airplanes.Add(a);
+
+
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            var _airportService = scope.ServiceProvider.GetRequiredService<IAirportService>();
+            a.StationsT = _airportService.GetRoute(a.TypeOfFlight);
+
+
+/*            a.StationsT = routes.ReturnRoutesT(a.TypeOfFlight);
+*/
         }
 
         public IEnumerable<Airplane> GetAirplanes() { return airplanes; }

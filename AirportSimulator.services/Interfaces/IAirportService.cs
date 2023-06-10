@@ -17,6 +17,7 @@ namespace AirportSimulator.services.Interfaces
         public void AddPlannedTakeOffAirplane(AirplaneDbDto flights);
         public void AddVisit(Visit visit);
         public void UpdeateVisit(Airplane a, DateTime ET);
+        public List<Tuple<Station?, Station?>> GetRoute(FlightType flightType);
 
     }
 }

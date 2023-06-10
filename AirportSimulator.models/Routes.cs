@@ -25,6 +25,9 @@ namespace AirportSimulator.models
 
 
 
+
+
+
             LandRouteT.Add(new Tuple<Station?, Station?>(null, s1));
             LandRouteT.Add(new Tuple<Station?, Station?>(s1, s2));
             LandRouteT.Add(new Tuple<Station?, Station?>(s2, s3));
