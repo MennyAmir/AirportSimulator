@@ -58,21 +58,7 @@ namespace AirportSimulator.services.Services
             Console.WriteLine("stations send");
         }
 
-        public void AddLandingAirplane(AirplaneDbDto flight) {
-            _airportDbContext.PlannedLandings.Add(flight);
-            _airportDbContext.SaveChanges();
-            AirplaneDbDto[] dbDto = _airportDbContext.PlannedLandings.ToArray();
-            _flightHubs.SendTakeOffFlights(dbDto);
-            Console.WriteLine("PlannedLandings reoprt");
-        }
 
-        public void AddPlannedTakeOffAirplane(AirplaneDbDto flight) {
-            _airportDbContext.PlannedTakeOff.Add(flight);
-            _airportDbContext.SaveChanges();
-            AirplaneDbDto[] dbDto = _airportDbContext.PlannedTakeOff.ToArray();
-            _flightHubs.SendLandingFlights(dbDto);
-            Console.WriteLine("PlannedTakeOff reoprt");
-        }
 
         public Station GetStationByID(int id) {
             StationDbDto stationDbDto = _airportDbContext.Stations.First(s => s.id == id);
