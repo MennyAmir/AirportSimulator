@@ -94,13 +94,25 @@ namespace AirportSimulator.services
                     {
                         if (a.Passing == true) break;
 
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"AIRPLAME {a.FlightNumber} START");
+                        Console.ResetColor();
+
                         Station? s = a.CurrentStationT;
                         Station? nextStation = null;
                         List<Station> asd = new List<Station>();
 
                         GetNextPossibleStations(finishedRoute, a, s, asd);
 
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"GetNextPossibleStations {a.FlightNumber} WORKS");
+                        Console.ResetColor();
+
                         nextStation = GetNextOpenStation(asd);
+
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"GetNextOpenStation {a.FlightNumber} WORKS");
+                        Console.ResetColor();
 
                         /*                        if (nextStation == null)
                                                 {
@@ -110,8 +122,16 @@ namespace AirportSimulator.services
                                                 }*/
 
                         if (nextStation != null) { nextStation.LockSt(); }
+
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"before {a.FlightNumber} AirplaneCrossingToNextST");
+                        Console.ResetColor();
                         
                         AirplaneCrossingToNextST(a, nextStation);
+
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"AirplaneCrossingToNextST {a.FlightNumber} WORKS");
+                        Console.ResetColor();
                     }
 
                     while (finishedRoute.Count > 0)
@@ -130,12 +150,12 @@ namespace AirportSimulator.services
 
 
         private static void GetNextPossibleStations(List<Airplane> finishedRoute, Airplane a, Station? s, List<Station> asd) {
-            foreach (var ts in a.StationsT)// עובד על כל תחנה 
+            foreach (var ts in a.StationsT)
             {
 
 
-                if (s == null && ts.Item1 == null) // אם התחנההנוחכית ריקה וגרופ הנוחכי התחנה הראשונה ריקה 
-                                                   // בקיצור המטוס רק הגיע לשדה 
+                if (s == null && ts.Item1 == null) 
+                                                   
                 {
                     if (a.TypeOfFlight == FlightType.Incoming)
                     {
@@ -148,11 +168,11 @@ namespace AirportSimulator.services
 
                     }
                 }
-                else if (s == ts.Item1) // אחרת עם התחנה הנוכחית שווה לאיזשהו תחנה ראשונית ברשימה של הראשימות הראשוניות
+                else if (s == ts.Item1) 
                 {
-                    if (ts.Item2 != null) // אם יש תחנה להמשיך עליה = המטוס לא בתחנה האחרונה שלו 
+                    if (ts.Item2 != null) 
                         asd.Add(ts.Item2);
-                    else // עם המטוס הגיע לאחת מהתכנות האחרונות שלו 
+                    else 
                     {
                         finishedRoute.Add(a);
                         break;

@@ -33,6 +33,18 @@ namespace AirportSimulator.api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("ClientPermission", policy =>
+                {
+                    policy.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithOrigins("http://localhost:3000")
+                        .AllowCredentials();
+                });
+            });
+
             var app = builder.Build();
 
 
@@ -43,10 +55,12 @@ namespace AirportSimulator.api
                 ctx.Database.EnsureCreated();
             }
 
-            app.UseCors(policy => policy.AllowAnyHeader()
+            /*app.UseCors(policy => policy.AllowAnyHeader()
                             .AllowAnyMethod()
                             .SetIsOriginAllowed(origin => true)
-                            .AllowCredentials());
+                            .AllowCredentials());*/
+
+            app.UseCors("ClientPermission");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -62,7 +76,7 @@ namespace AirportSimulator.api
 
             app.MapControllers();
 
-            app.MapHub<FlightHubs>("./AirportSimulator.services/Services/FlightHubs");
+            app.MapHub<FlightHubs>("/hubs/FlightHubs");
 
             app.Run();
         }
