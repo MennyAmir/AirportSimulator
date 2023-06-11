@@ -2,6 +2,7 @@
 using AirportSimulator.data.DTO;
 using AirportSimulator.models;
 using AirportSimulator.services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
@@ -15,27 +16,25 @@ namespace AirportSimulator.services.Services
 {
     public class AirportService : IAirportService {
         private readonly AirportDbContext _airportDbContext;
-        private readonly IFlightHubs _flightHubs;
+        private readonly IHubContext<FlightHubs> _hub;
 
-        public AirportService(AirportDbContext airportDbContext, IFlightHubs flightHubs) {
+        public AirportService(AirportDbContext airportDbContext, IHubContext<FlightHubs> hub) {
             _airportDbContext = airportDbContext;
-            _flightHubs = flightHubs;
+            _hub = hub;
         }
 
-        public void AddAirplane(AirplaneDbDto a) {
+        public async void AddAirplane(AirplaneDbDto a) {
             Console.WriteLine("I'm working");
 
             _airportDbContext.Airplanes.Add(a);
             _airportDbContext.SaveChanges();
-            _flightHubs.SendFlight(a);
+
+            await _hub.Clients.All.SendAsync("sendAirplane", $"the airplane: {a.FlightNumber} to {a.Country} -- {a.TypeOfFlight}");
         }
 
         public void AddVisit(Visit visit) {
             _airportDbContext.Visits.Add(visit);
             _airportDbContext.SaveChanges();
-
-            _flightHubs.SendVisit(visit);
-            Console.WriteLine("visit send");
         }
         public async void UpdeateVisit(Airplane a, DateTime ET) {
             a.CurrentVisit.ExitTime = ET;
@@ -43,8 +42,8 @@ namespace AirportSimulator.services.Services
             _airportDbContext.Visits.Update(a.CurrentVisit);
             _airportDbContext.SaveChanges();
 
-            await _flightHubs.SendVisit(a.CurrentVisit); // גם פה צריך לעשות שרק יעדכן 
-            Console.WriteLine("visit send");
+            await _hub.Clients.All.SendAsync
+                ("sendVisit", $"the airplane: {a.FlightNumber} was at the station: {a.CurrentVisit.StationId} from {a.CurrentVisit.EntryTime:hh:mm:ss.F} to {a.CurrentVisit.ExitTime:hh:mm:ss.F}"); 
         }
 
         public void ReportStations(StationDbDto[] stations) {
@@ -54,7 +53,6 @@ namespace AirportSimulator.services.Services
             }
             _airportDbContext.SaveChanges();
 
-            _flightHubs.SendStateOfStations(stations);
             Console.WriteLine("stations send");
         }
 

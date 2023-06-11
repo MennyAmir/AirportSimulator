@@ -41,7 +41,7 @@ namespace AirportSimulator.services
 
         public Airplane AddFlight(Airplane a) {
 
-            AddingFlightData(a);
+            AddingRoute(a);
 
             Console.WriteLine(a.id + "," + a.FlightNumber);
             airplanes.Add(a);
@@ -63,7 +63,7 @@ namespace AirportSimulator.services
 
         }
 
-        private void AddingFlightData(Airplane a) {
+        private void AddingRoute(Airplane a) {
 
 
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
